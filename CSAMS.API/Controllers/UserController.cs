@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using AutoMapper;
 using CSAMS.Commands;
@@ -63,7 +64,14 @@ namespace CSAMS.API.Controllers
 
                 return CreatedAtAction(nameof(Get), new { username = query.Username }, user);
             } catch (Exception ex) {
-                // TODO (Svein): Check if username or email is duplicated :)
+                // Check if exception is cause of duplicated key
+                if (ex.InnerException.Message.Contains("duplicate key")) {
+                    return BadRequest(new {
+                        title = $"Username or email is already in use.",
+                        status = HttpStatusCode.BadRequest,
+                    });
+                }
+
                 return BadRequest();
             }
         }
