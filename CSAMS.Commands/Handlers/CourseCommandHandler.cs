@@ -21,7 +21,7 @@ namespace CSAMS.Commands.Handlers {
         public async Task HandleAsync(CreateCourseCommand command) {
             var course = new Course {
                 Name = command.Name,
-                Code = command.Code,
+                Code = command.Code.ToUpper(),
                 Descripion = command.Description,
             };
 
