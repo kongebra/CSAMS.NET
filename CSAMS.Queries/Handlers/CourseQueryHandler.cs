@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using CSAMS.Contracts.Interfaces;
 using CSAMS.Contracts.Responses;
+using CSAMS.Core.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,7 +29,17 @@ namespace CSAMS.Queries.Handlers {
             var course = await _repository.GetByCode(query.Code);
 
             if (course == null) {
-                return null;
+                throw new EntityNotFoundException($"Course with code '{query.Code}' Not Found.");
+            }
+
+            return _mapper.Map<CourseDetail>(course);
+        }
+
+        public async Task<CourseDetail> HandleAsync(GetCourseByIdQuery query) {
+            var course = await _repository.GetById(query.Id);
+
+            if (course == null) {
+                throw new EntityNotFoundException($"Course with ID '{query.Id}' Not Found.");
             }
 
             return _mapper.Map<CourseDetail>(course);
