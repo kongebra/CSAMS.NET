@@ -12,15 +12,19 @@ namespace CSAMS.API {
             CreateMap<User, UserInfo>();
             CreateMap<Course, CourseDetail>();
             CreateMap<Course, CourseInfo>();
+            CreateMap<Assignment, AssignmentDetail>();
+            CreateMap<Assignment, AssignmentInfo>();
 
             // Model <-> Commands
             CreateMap<User, CreateUserCommand>();
 
             // Requests <-> Commands
-            CreateMap<RegisterUserRequest, CreateUserCommand>();
+            CreateMap<CreateUserRequest, CreateUserCommand>();
             CreateMap<UpdateUserDetailRequest, UpdateUserCommand>();
             CreateMap<CreateCourseRequest, CreateCourseCommand>();
             CreateMap<UpdateCourseRequest, UpdateCourseCommand>();
+            CreateMap<CreateAssignmentRequest, CreateAssignmentCommand>();
+            CreateMap<UpdateAssignmentRequest, UpdateAssignmentCommand>();
         }
     }
 }
