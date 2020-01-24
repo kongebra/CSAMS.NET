@@ -17,7 +17,6 @@ namespace CSAMS.DAL.Repositories {
         }
 
         public async Task Add(Course entity) {
-            entity.Id = Guid.NewGuid();
             entity.CreatedAt = DateTime.Now;
             entity.UpdatedAt = entity.CreatedAt;
 
