@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Text;
 
 namespace CSAMS.Contracts.Requests {
-    public class RegisterUserRequest {
+    public class CreateUserRequest {
         [Required]
         public string FirstName { get; set; }
         [Required]

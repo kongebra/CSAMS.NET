@@ -54,7 +54,7 @@ namespace CSAMS.API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Post([FromBody] RegisterUserRequest request) {
+        public async Task<ActionResult> Post([FromBody] CreateUserRequest request) {
             try {
                 var command = _mapper.Map<CreateUserCommand>(request);
                 await _commandHandler.HandleAsync(command);
