@@ -23,7 +23,7 @@ namespace CSAMS.Commands.Handlers {
             _mapper = mapper;
         }
 
-        public async Task HandleAsync(RegisterUserCommand command) {
+        public async Task HandleAsync(CreateUserCommand command) {
             var user = _mapper.Map<User>(command);
             user.Role = UserRole.Student;
 
@@ -31,7 +31,7 @@ namespace CSAMS.Commands.Handlers {
             await _commandStoreService.PushAsync(command);
         }
 
-        public async Task HandleAsync(UpdateUserDetailCommand command) {
+        public async Task HandleAsync(UpdateUserCommand command) {
             var user = await _repository.GetByUsername(command.Username);
 
             if (user == null) {
