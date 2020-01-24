@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace CSAMS.Commands {
-    public class UpdateUserDetailCommand {
+    public class UpdateUserCommand {
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Email { get; set; }
