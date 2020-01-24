@@ -1,4 +1,5 @@
-﻿using CSAMS.Contracts.Interfaces;
+﻿using AutoMapper;
+using CSAMS.Contracts.Interfaces;
 using CSAMS.Contracts.Responses;
 using System;
 using System.Collections.Generic;
@@ -8,19 +9,18 @@ using System.Threading.Tasks;
 namespace CSAMS.Queries.Handlers {
     public class CourseQueryHandler {
         private readonly ICourseRepository _repository;
+        private readonly IMapper _mapper;
 
-        public CourseQueryHandler(ICourseRepository repository) {
+        public CourseQueryHandler(ICourseRepository repository,IMapper mapper) {
             _repository = repository;
+            _mapper = mapper;
         }
 
         public async Task<IEnumerable<CourseInfo>> HandleAsync(GetAllCoursesQuery _) {
             var courses = await _repository.GetAll();
 
             return courses.Select(course => {
-                return new CourseInfo {
-                    Name = course.Name,
-                    Code = course.Code,
-                };
+                return _mapper.Map<CourseInfo>(course);
             });
         }
 
@@ -31,12 +31,7 @@ namespace CSAMS.Queries.Handlers {
                 return null;
             }
 
-            return new CourseDetail {
-                Id = course.Id,
-                Name = course.Name,
-                Code = course.Code,
-                Description = course.Descripion,
-            };
+            return _mapper.Map<CourseDetail>(course);
         }
     }
 }
