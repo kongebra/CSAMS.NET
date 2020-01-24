@@ -9,6 +9,7 @@ namespace CSAMS.DAL {
         public DbSet<Command> Commands { get; set; }
         public DbSet<Course> Courses { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Assignment> Assignments { get; set; }
 
         public CSAMSDbContext(DbContextOptions<CSAMSDbContext> options) : base(options) {}
 
