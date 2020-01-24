@@ -33,6 +33,7 @@ namespace CSAMS.API {
             // Repositories
             services.AddScoped<ICourseRepository, CourseRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IAssignmentRepository, AssignmentRepository>();
 
             // Commands
             services.AddScoped<CourseCommandHandler>();
@@ -41,6 +42,7 @@ namespace CSAMS.API {
             // Queries
             services.AddScoped<CourseQueryHandler>();
             services.AddScoped<UserQueryHandler>();
+            services.AddScoped<AssignmentQueryHandler>();
 
             // Services
             services.AddScoped<CommandStoreService>();
