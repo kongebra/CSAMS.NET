@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
+using AutoMapper;
 using CSAMS.Commands;
 using CSAMS.Commands.Handlers;
 using CSAMS.Contracts.Requests;
 using CSAMS.Queries;
 using CSAMS.Queries.Handlers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CSAMS.API.Controllers {
@@ -16,10 +19,15 @@ namespace CSAMS.API.Controllers {
     public class CourseController : ControllerBase {
         private readonly CourseQueryHandler _queryHandler;
         private readonly CourseCommandHandler _commandHandler;
+        private readonly IMapper _mapper;
 
-        public CourseController(CourseQueryHandler queryHandler, CourseCommandHandler commandHandler) {
+        public CourseController(
+            CourseQueryHandler queryHandler, 
+            CourseCommandHandler commandHandler,
+            IMapper mapper) {
             _queryHandler = queryHandler;
             _commandHandler = commandHandler;
+            _mapper = mapper;
         } 
         
         [HttpGet]
@@ -37,8 +45,10 @@ namespace CSAMS.API.Controllers {
             var course = await _queryHandler.HandleAsync(query);
 
             if (course == null) {
-                // TODO (Svein): Create a response body
-                return NotFound();
+                return NotFound(new {
+                    title = $"Course with code '{code.ToUpper()}' Not Found.",
+                    status = HttpStatusCode.NotFound,
+                });
             }
 
             return Ok(course);
@@ -47,19 +57,22 @@ namespace CSAMS.API.Controllers {
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] CreateCourseRequest request) {
             try {
-                // TODO (Svein): Add AutoMapper
-                var command = new CreateCourseCommand {
-                    Name = request.Name,
-                    Code = request.Code,
-                    Description = request.Description,
-                };
+                var command = _mapper.Map<CreateCourseCommand>(request);
                 await _commandHandler.HandleAsync(command);
 
                 var query = new GetCourseDetailQuery { Code = command.Code };
                 var course = await _queryHandler.HandleAsync(query);
 
                 return CreatedAtAction(nameof(Get), new { code = course.Code }, course);
-            } catch (Exception) {
+            } catch (Exception ex) {
+                // Check if exception is cause of duplicated key
+                if (ex.InnerException.Message.Contains("duplicate key")) {
+                    return BadRequest(new {
+                        title = $"Course with code '{request.Code.ToUpper()}' already exists.",
+                        status = HttpStatusCode.BadRequest,
+                    });
+                }
+
                 return BadRequest();
             }
         }
@@ -68,15 +81,14 @@ namespace CSAMS.API.Controllers {
         [Route("{code}")]
         public async Task<ActionResult> Put([FromBody] UpdateCourseRequest request, string code) {
             try {
-                // TODO (Svein): Add AutoMapper
-                var command = new UpdateCourseCommand {
-                    Code = code,
-                    Name = request.Name,
-                    Description = request.Description,
-                };
+                var command = _mapper.Map<UpdateCourseCommand>(request);
+                command.Code = code;
                 await _commandHandler.HandleAsync(command);
 
-                return Ok();
+                var query = new GetCourseDetailQuery { Code = code };
+                var course = await _queryHandler.HandleAsync(query);
+
+                return Ok(course);
             } catch (Exception) {
                 return BadRequest();
             }

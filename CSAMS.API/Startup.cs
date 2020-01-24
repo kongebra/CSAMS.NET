@@ -1,9 +1,11 @@
+using AutoMapper;
 using CSAMS.Commands.Handlers;
 using CSAMS.Contracts.Interfaces;
 using CSAMS.DAL;
 using CSAMS.DAL.Repositories;
 using CSAMS.Queries.Handlers;
 using CSAMS.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -23,26 +25,43 @@ namespace CSAMS.API {
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services) {
-            // DbContext's
+            // DbContext
             services.AddDbContext<DbContext, CSAMSDbContext>(options => {
-                options.UseInMemoryDatabase("CSAMS");
-                // options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
             });
 
             // Repositories
             services.AddScoped<ICourseRepository, CourseRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
 
             // Commands
             services.AddScoped<CourseCommandHandler>();
+            services.AddScoped<UserCommandHandler>();
 
             // Queries
             services.AddScoped<CourseQueryHandler>();
+            services.AddScoped<UserQueryHandler>();
 
             // Services
             services.AddScoped<CommandStoreService>();
 
+            // AutoMapper
+            services.AddAutoMapper(typeof(Startup));
+
+            // Authentication
+            services.AddAuthentication(options => {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options => {
+                options.Authority = $"https://{Configuration["Auth0:Domain"]}/";
+                options.Audience = Configuration["Auth0:Audience"];
+            });
+
             // Controllers
-            services.AddControllers();
+            services.AddControllers()
+                .AddJsonOptions(options => {
+                    options.JsonSerializerOptions.IgnoreNullValues = true;
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -53,6 +72,7 @@ namespace CSAMS.API {
 
             app.UseHttpsRedirection();
             app.UseRouting();
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints => {
