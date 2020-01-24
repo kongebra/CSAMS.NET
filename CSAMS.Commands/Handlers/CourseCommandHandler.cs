@@ -22,7 +22,7 @@ namespace CSAMS.Commands.Handlers {
             var course = new Course {
                 Name = command.Name,
                 Code = command.Code.ToUpper(),
-                Descripion = command.Description,
+                Description = command.Description,
             };
 
             await _repository.Add(course);
@@ -41,7 +41,7 @@ namespace CSAMS.Commands.Handlers {
             }
 
             if (!string.IsNullOrEmpty(command.Description)) {
-                course.Descripion = command.Description;
+                course.Description = command.Description;
             }
 
             await _repository.Update(course);
