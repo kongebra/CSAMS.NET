@@ -21,7 +21,7 @@ namespace CSAMS.Contracts.Tests {
             var course = new Course {
                 Name = "Basic Computer Science",
                 Code = "CS100",
-                Descripion = "Sample description"
+                Description = "Sample description"
             };
 
             _repository.Setup(r => r.GetByCode(courseCode)).ReturnsAsync(course);
