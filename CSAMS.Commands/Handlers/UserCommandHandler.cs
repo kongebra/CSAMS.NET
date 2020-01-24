@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using CSAMS.Contracts.Interfaces;
 using CSAMS.Core.Enums;
+using CSAMS.Core.Exceptions;
 using CSAMS.Domain.Models;
 using CSAMS.Services;
 using System;
@@ -23,19 +24,21 @@ namespace CSAMS.Commands.Handlers {
             _mapper = mapper;
         }
 
-        public async Task HandleAsync(CreateUserCommand command) {
+        public async Task<Guid> HandleAsync(CreateUserCommand command) {
             var user = _mapper.Map<User>(command);
             user.Role = UserRole.Student;
 
             await _repository.Add(user);
             await _commandStoreService.PushAsync(command);
+
+            return user.Id;
         }
 
         public async Task HandleAsync(UpdateUserCommand command) {
             var user = await _repository.GetByUsername(command.Username);
 
             if (user == null) {
-                throw new Exception($"User with username '{command.Username}' Not Found");
+                throw new EntityNotFoundException($"User with username '{command.Username}' Not Found");
             }
 
             if (!string.IsNullOrEmpty(command.FirstName)) {
@@ -78,7 +81,7 @@ namespace CSAMS.Commands.Handlers {
             var user = await _repository.GetByUsername(command.Username);
 
             if (user == null) {
-                throw new Exception($"User with username '{command.Username}' Not Found");
+                throw new EntityNotFoundException($"User with username '{command.Username}' Not Found");
             }
 
             await _repository.Remove(user);
@@ -89,7 +92,7 @@ namespace CSAMS.Commands.Handlers {
             var user = await _repository.GetByEmail(command.Email);
 
             if (user == null) {
-                throw new Exception($"User with email '{command.Email}' Not Found");
+                throw new EntityNotFoundException($"User with email '{command.Email}' Not Found");
             }
 
             if (user.EmailVerified) {
