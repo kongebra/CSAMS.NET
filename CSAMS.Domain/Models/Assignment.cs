@@ -14,8 +14,8 @@ namespace CSAMS.Domain.Models {
         public string Title { get; set; }
         public string Description { get; set; }
 
-        public DateTime PublishAt { get; set; }
-        public DateTime DeadlineAt { get; set; }
+        public DateTime? PublishAt { get; set; }
+        public DateTime? DeadlineAt { get; set; }
         #endregion
 
         #region Course Relation
