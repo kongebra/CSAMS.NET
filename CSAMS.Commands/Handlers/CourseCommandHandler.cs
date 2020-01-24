@@ -1,4 +1,5 @@
 ﻿using CSAMS.Contracts.Interfaces;
+using CSAMS.Core.Exceptions;
 using CSAMS.Domain.Models;
 using CSAMS.Services;
 using System;
@@ -18,7 +19,7 @@ namespace CSAMS.Commands.Handlers {
             _commandStoreService = commandStoreService;
         }
 
-        public async Task HandleAsync(CreateCourseCommand command) {
+        public async Task<Guid> HandleAsync(CreateCourseCommand command) {
             var course = new Course {
                 Name = command.Name,
                 Code = command.Code.ToUpper(),
@@ -27,13 +28,15 @@ namespace CSAMS.Commands.Handlers {
 
             await _repository.Add(course);
             await _commandStoreService.PushAsync(command);
+
+            return course.Id;
         }
 
         public async Task HandleAsync(UpdateCourseCommand command) {
             var course = await _repository.GetByCode(command.Code);
 
             if (course == null) {
-                throw new Exception($"Course with code '{command.Code}' Not Found.");
+                throw new EntityNotFoundException($"Course with code '{command.Code}' Not Found.");
             }
 
             if (!string.IsNullOrEmpty(command.Name)) {
@@ -52,7 +55,7 @@ namespace CSAMS.Commands.Handlers {
             var course = await _repository.GetByCode(command.Code);
 
             if (course == null) {
-                throw new Exception($"Course with code '{command.Code}' Not Found.");
+                throw new EntityNotFoundException($"Course with code '{command.Code}' Not Found.");
             }
 
             await _repository.Remove(course);

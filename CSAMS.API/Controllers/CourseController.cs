@@ -7,6 +7,7 @@ using AutoMapper;
 using CSAMS.Commands;
 using CSAMS.Commands.Handlers;
 using CSAMS.Contracts.Requests;
+using CSAMS.Core.Exceptions;
 using CSAMS.Queries;
 using CSAMS.Queries.Handlers;
 using Microsoft.AspNetCore.Authorization;
@@ -41,17 +42,14 @@ namespace CSAMS.API.Controllers {
         [HttpGet]
         [Route("{code}")]
         public async Task<ActionResult> Get(string code) {
-            var query = new GetCourseDetailQuery { Code = code };
-            var course = await _queryHandler.HandleAsync(query);
+            try {
+                var query = new GetCourseDetailQuery { Code = code };
+                var course = await _queryHandler.HandleAsync(query);
 
-            if (course == null) {
-                return NotFound(new {
-                    title = $"Course with code '{code.ToUpper()}' Not Found.",
-                    status = HttpStatusCode.NotFound,
-                });
+                return Ok(course);
+            } catch (EntityNotFoundException ex) {
+                return NotFound(ex.Message);
             }
-
-            return Ok(course);
         }
 
         [HttpPost]
@@ -89,6 +87,8 @@ namespace CSAMS.API.Controllers {
                 var course = await _queryHandler.HandleAsync(query);
 
                 return Ok(course);
+            } catch (EntityNotFoundException ex) {
+                return NotFound(ex.Message);
             } catch (Exception) {
                 return BadRequest();
             }
@@ -102,6 +102,8 @@ namespace CSAMS.API.Controllers {
                 await _commandHandler.HandleAsync(command);
 
                 return NoContent();
+            } catch (EntityNotFoundException ex) {
+                return NotFound(ex.Message);
             } catch (Exception) {
                 return BadRequest();
             }
