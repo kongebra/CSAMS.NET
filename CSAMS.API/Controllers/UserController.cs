@@ -56,7 +56,7 @@ namespace CSAMS.API.Controllers
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] RegisterUserRequest request) {
             try {
-                var command = _mapper.Map<RegisterUserCommand>(request);
+                var command = _mapper.Map<CreateUserCommand>(request);
                 await _commandHandler.HandleAsync(command);
 
                 var query = new GetUserByUsernameQuery { Username = command.Username };
@@ -80,7 +80,7 @@ namespace CSAMS.API.Controllers
         [Route("{username}")]
         public async Task<ActionResult> Put([FromBody] UpdateUserDetailRequest request, string username) {
             try {
-                var command = _mapper.Map<UpdateUserDetailCommand>(request);
+                var command = _mapper.Map<UpdateUserCommand>(request);
                 command.Username = username;
                 await _commandHandler.HandleAsync(command);
 
