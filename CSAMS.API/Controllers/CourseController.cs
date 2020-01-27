@@ -108,5 +108,20 @@ namespace CSAMS.API.Controllers {
                 return BadRequest();
             }
         }
+
+        [HttpGet]
+        [Route("assignments/{code}")]
+        public async Task<ActionResult> GetAssignments(string code) {
+            try {
+                var query = new GetAssignmentsInCourseQuery { CourseCode = code };
+                var assignments = await _queryHandler.HandleAsync(query);
+
+                return Ok(assignments);
+            } catch (EntityNotFoundException ex) {
+                return NotFound(ex.Message);
+            } catch (Exception) {
+                return BadRequest();
+            }
+        }
     }
 }
