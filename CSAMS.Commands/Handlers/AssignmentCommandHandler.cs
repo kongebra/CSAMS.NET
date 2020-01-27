@@ -63,7 +63,7 @@ namespace CSAMS.Commands.Handlers {
             var assignment = await _repository.GetById(command.Id);
 
             if (assignment == null) {
-                throw new EntityNotFoundException($"Assignment with ID 'command.Id{}' Not Found.");
+                throw new EntityNotFoundException($"Assignment with ID '{command.Id}' Not Found.");
             }
 
             await _repository.Remove(assignment);
