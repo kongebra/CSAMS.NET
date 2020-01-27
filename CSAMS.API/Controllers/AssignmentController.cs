@@ -12,8 +12,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CSAMS.API.Controllers {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
+    [Route("api/[controller]s")]
     public class AssignmentController : ControllerBase {
         private readonly AssignmentCommandHandler _commandHandler;
         private readonly AssignmentQueryHandler _queryHandler;
@@ -87,6 +88,19 @@ namespace CSAMS.API.Controllers {
                 await _commandHandler.HandleAsync(command);
 
                 return NoContent();
+            } catch (Exception) {
+                return BadRequest();
+            }
+        }
+
+        [HttpGet]
+        [Route("course/{courseCode}")]
+        public async Task<ActionResult> GetFromCourse(string courseCode) {
+            try {
+                var query = new GetAssignmentsInCourseQuery { CourseCode = courseCode };
+                var assignments = await _queryHandler.HandleAsync(query);
+
+                return Ok(assignments);
             } catch (Exception) {
                 return BadRequest();
             }
