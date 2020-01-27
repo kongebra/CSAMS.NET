@@ -44,5 +44,17 @@ namespace CSAMS.Queries.Handlers {
 
             return _mapper.Map<CourseDetail>(course);
         }
+
+        public async Task<IEnumerable<AssignmentDetail>> HandleAsync(GetAssignmentsInCourseQuery query) {
+            var course = await _repository.GetByCode(query.CourseCode);
+
+            if (course == null) {
+                throw new EntityNotFoundException($"Course with code '{query.CourseCode}' Not Found.");
+            }
+
+            return course.Assignments.Select(assignment => {
+                return _mapper.Map<AssignmentDetail>(assignment);
+            });
+        }
     }
 }

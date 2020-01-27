@@ -35,5 +35,13 @@ namespace CSAMS.Queries.Handlers {
 
             return _mapper.Map<AssignmentDetail>(assignment);
         }
+
+        public async Task<IEnumerable<AssignmentInfo>> HandleAsync(GetAssignmentsInCourseQuery query) {
+            var assignments = await _repository.GetWhere(o => o.Course.Code.ToLower() == query.CourseCode.ToLower());
+
+            return assignments.Select(assignment => {
+                return _mapper.Map<AssignmentInfo>(assignment);
+            });
+        }
     }
 }
